@@ -40,7 +40,6 @@ class Switch(Host):
         elif isinstance(packet, Packet):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
             board.add_packet(packet2)
-        print(type(packet2))
         
     
     def recieve(self, packet:Packet, board:Board):

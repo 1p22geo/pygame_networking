@@ -34,10 +34,11 @@ class Host(Linkable):
             
     def recieve(self, packet, board:Board):
         if isinstance(packet, DHCP_offer):
-            self.IP = packet.l3[1]
-            self.mask = packet.mask
-            self.gateway = packet.gateway
-            self.DHCP_configured = True
+            if packet.l2[1] == self.mac:
+                self.IP = packet.l3[1]
+                self.mask = packet.mask
+                self.gateway = packet.gateway
+                self.DHCP_configured = True
         elif isinstance(packet, ARPresponse):
             self.ARP['.'.join(packet.l3[0])] = packet.l2[0]
             if packet.l2[1] == self.mac:
@@ -49,7 +50,6 @@ class Host(Linkable):
                             board.add_packet(packet2)
         elif isinstance(packet, ARPrequest):
             self.ARP['.'.join(packet.l3[0])] = packet.l2[0]
-            print('.'.join(packet.l3[1]), '.'.join(self.IP))
             if packet.l3 and self.IP and ('.'.join(packet.l3[1]) == '.'.join(self.IP)):
                 for link in self.links:
                     linked = board.objects[link]
@@ -64,7 +64,7 @@ class Host(Linkable):
             self.app = False
         else:
             ip = self.app.getEntry("IP adress :")
-            self.target = ip.split('.')
+            self.target = tuple(ip.split('.'))
             self.app.stop()
             self.app = False
         
@@ -80,7 +80,8 @@ class Host(Linkable):
         for link in self.links:
             linked = board.objects[link]
             if '.'.join(self.target) in self.ARP.keys():
-                packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target]), (self.IP, self.target))
+                packet = Packet(self.rect.center, linked, (self.mac, self.ARP['.'.join(self.target)]), (self.IP, self.target))
+                board.add_packet(packet)
             else:
                 # Send ARP request
                 packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.target)

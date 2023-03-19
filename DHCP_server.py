@@ -11,11 +11,13 @@ class DHCP_server(Host):
         super().__init__(rect, mac)
         self.image = pygame.image.load('DHCPserver.png')
         self.mac = mac
-        self.IP = IP.split('.')
+        self.IP = '22.33.44.5'.split('.')
         self.mask = '/24' # will be something like /24 or /16
-        self.gateway = None
+        self.gateway = '22.33.44.1'.split('.')
         self.range = (100,255)
         self.hosts = [None, None]
+        self.hosts[0] = '.'.join(self.IP)
+        self.hosts[1] = '.'.join(self.gateway)
     def recieve(self, packet, board:Board):
         adress = None
         if isinstance(packet, DHCP_discover):
@@ -28,7 +30,7 @@ class DHCP_server(Host):
             for link in self.links:
                 linked = board.objects[link]
                 
-                packet2 = DHCP_offer(self.rect.center, linked, (self.mac, packet.l2[0]), (self.IP, adress), self.mask, self.gateway)
+                packet2 = DHCP_offer(self.rect.center, linked, (self.mac, packet.l2[0]), (tuple(self.IP), adress), self.mask, self.gateway)
                 board.add_packet(packet2)
     def press(self, button):
         if button == 'Cancel':
