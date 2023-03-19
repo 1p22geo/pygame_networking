@@ -1,6 +1,7 @@
 import pygame
 import item
 
+
 class Linkable(item.Item):
     def __init__(self, rect):
         super().__init__(rect)

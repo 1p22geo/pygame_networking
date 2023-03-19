@@ -1,7 +1,6 @@
 import pygame
 import board
 import math
-from traverse import Traverser
 
 class Handler():
     def __init__(self):
@@ -16,10 +15,14 @@ class Handler():
             if self.selected >= 0:
                 selectedpos = board.objects[self.selected].rect.center
                 pos = pygame.mouse.get_pos()
-                button1pos = [selectedpos[0], selectedpos[1] - 60]
+                button1pos = [selectedpos[0] + 20, selectedpos[1] - 60]
                 dist = math.sqrt((pos[0] - button1pos[0])**2 + (pos[1] - button1pos[1])**2)
                 if dist <= 10:
                     board.objects[self.selected].send(board)
+                button2pos = [selectedpos[0] - 20, selectedpos[1] - 60]
+                dist = math.sqrt((pos[0] - button2pos[0])**2 + (pos[1] - button2pos[1])**2)
+                if dist <= 10:
+                    board.objects[self.selected].packet()
                     
             self.selected = -1
             for obj in board.objects:

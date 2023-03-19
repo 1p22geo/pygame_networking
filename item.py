@@ -15,16 +15,14 @@ class Item():
 
     def check_click(self, click):
         clicked = pygame.Rect.collidepoint(self.rect, click)
-        """ if clicked:
-            self.click() """
         return clicked
     
     def click(self, button, board):
-        print("Object {} clicked!".format(self.__id))
+        pass
     
     def dragged(self, pos, button):
         if button == 1:
             self.rect.center = pos
         
     def dragto(self, pos, button, board):
-        print("Dragged to {0} with button {1}".format(pos, button))
+        pass
