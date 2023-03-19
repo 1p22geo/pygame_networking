@@ -4,6 +4,8 @@ from packet import Packet
 from board import Board
 from DHCP_offer import DHCP_offer
 from DHCP_discover import DHCP_discover
+from ARPrequest import ARPrequest
+from ARPresponse import ARPresponse
 import copy
 
 class Switch(Host):
@@ -28,6 +30,12 @@ class Switch(Host):
             board.add_packet(packet2)
         elif isinstance(packet, DHCP_offer):
             packet2 = DHCP_offer(self.rect.center, board.objects[link], packet.l2, packet.l3, packet.mask, packet.gateway)
+            board.add_packet(packet2)
+        elif isinstance(packet,ARPresponse):
+            packet2 = ARPresponse(self.rect.center, board.objects[link], packet.l2, packet.l3)
+            board.add_packet(packet2)
+        elif isinstance(packet,ARPrequest):
+            packet2 = ARPrequest(self.rect.center, board.objects[link], packet.l2[0], packet.l3[0], packet.l3[1])
             board.add_packet(packet2)
         elif isinstance(packet, Packet):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)

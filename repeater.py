@@ -4,6 +4,8 @@ from board import Board
 from packet import Packet
 from DHCP_discover import DHCP_discover
 from DHCP_offer import DHCP_offer
+from ARPrequest import ARPrequest
+from ARPresponse import ARPresponse
 
 class Repeater(Host):
     def __init__(self, rect, mac):
@@ -16,6 +18,12 @@ class Repeater(Host):
             board.add_packet(packet2)
         elif isinstance(packet, DHCP_offer):
             packet2 = DHCP_offer(self.rect.center, board.objects[link], packet.l2, packet.l3, packet.mask, packet.gateway)
+            board.add_packet(packet2)
+        elif isinstance(packet,ARPresponse):
+            packet2 = ARPresponse(self.rect.center, board.objects[link], packet.l2, packet.l3)
+            board.add_packet(packet2)
+        elif isinstance(packet,ARPrequest):
+            packet2 = ARPrequest(self.rect.center, board.objects[link], packet.srcmac, packet.srcip, packet.destip)
             board.add_packet(packet2)
         elif isinstance(packet, Packet):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
