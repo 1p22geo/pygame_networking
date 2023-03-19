@@ -1,9 +1,9 @@
 import pygame, math
 
 class Traverser():
-    def __init__(self, pos:tuple, target:tuple):
+    def __init__(self, pos:tuple, dest):
         self.pos = pos
-        self.target = target
+        self.dest = dest
         self.reached = False
     
     def assign_id(self, newid):
@@ -13,10 +13,10 @@ class Traverser():
         return self.__id
 
     def move(self):
-        if math.sqrt((self.pos[0]-self.target[0])**2+(self.pos[1]-self.target[1])**2) < 5:
+        if math.sqrt((self.pos[0]-self.dest.rect.center[0])**2+(self.pos[1]-self.dest.rect.center[1])**2) < 5:
             self.reached = True
             return
-        vec = [self.target[0] - self.pos[0], self.target[1] - self.pos[1]]
+        vec = [self.dest.rect.center[0] - self.pos[0], self.dest.rect.center[1] - self.pos[1]]
         length = math.sqrt((vec[0]**2) + (vec[1]**2))
         scale = 3/length
 

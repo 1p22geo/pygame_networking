@@ -19,10 +19,8 @@ class Handler():
                 button1pos = [selectedpos[0], selectedpos[1] - 60]
                 dist = math.sqrt((pos[0] - button1pos[0])**2 + (pos[1] - button1pos[1])**2)
                 if dist <= 10:
-                    for link in board.objects[self.selected].links:
-                        linked = board.objects[link]
-                        packet = Traverser(board.objects[self.selected].rect.center, linked.rect.center)
-                        board.add_packet(packet)
+                    board.objects[self.selected].send(board)
+                    
             self.selected = -1
             for obj in board.objects:
                 if obj.check_click(pygame.mouse.get_pos()):

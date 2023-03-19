@@ -24,6 +24,7 @@ class Display():
             pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(packet.pos[0] - 5, packet.pos[1] - 5, 10, 10))
             packet.move()
             if packet.reached:
+                packet.dest.recieve(packet, board)
                 board.del_packet(packet.get_id())
 
 
@@ -37,3 +38,14 @@ class Display():
             rect = pygame.Rect(0,0,30,30)
             rect.center = button1pos
             self.screen.blit(self.sendimg, rect)
+
+            font = pygame.font.SysFont(None, 30, False)
+            img = font.render('.'.join(selectedobject.IP), True, (0,0,0))
+            rect = img.get_rect()
+            rect.center = [pos[0], pos[1] + 40]
+            self.screen.blit(img, rect)
+            font = pygame.font.SysFont(None, 20, False)
+            img = font.render(selectedobject.mac, True, (0,0,0))
+            rect = img.get_rect()
+            rect.center = [pos[0], pos[1] + 60]
+            self.screen.blit(img, rect)
