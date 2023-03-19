@@ -12,6 +12,8 @@ class Host(Linkable):
         self.IP = IP.split('.')
         self.mask = mask.split('.')
         self.new_packet_data = ('ffff', '192.168.50.0')
+        self.sendimg = pygame.image.load('send.png')
+        self.packetimg = pygame.image.load('packet.png')
     
     def recieve(self, packet, board):
         if packet.l3[1] == '.'.join(self.IP):
@@ -44,18 +46,23 @@ class Host(Linkable):
             packet = Packet(self.rect.center, linked, (self.mac, self.new_packet_data[0]), (self.IP, self.new_packet_data[1]))
             board.add_packet(packet)
     
-    def drawOptions(self, screen, selected):
+    def drawOptions(self, screen):
         font = pygame.font.SysFont(None, 25, False)
-        img = font.render('.'.join(self.IP), True, (0,0,0))
+        img = font.render('.'.join(self.IP), True, (0,0,0), (255,255,255))
         rect = img.get_rect()
         rect.center = [self.rect.center[0], self.rect.center[1] + 50]
         screen.blit(img, rect)
         font = pygame.font.SysFont(None, 20, False)
-        img = font.render(self.mac, True, (0,0,0))
+        img = font.render(self.mac, True, (0,0,0), (255,255,255))
         rect = img.get_rect()
         rect.center = [self.rect.center[0], self.rect.center[1] + 70]
         screen.blit(img, rect)
-    def draw_selected(self, screen):
+        font = pygame.font.SysFont(None, 20, False)
+        img = font.render(str(self.get_id()), True, (0,0,0), (255,255,255))
+        rect = img.get_rect()
+        rect.center = [self.rect.center[0] + 35, self.rect.center[1] - 35]
+        screen.blit(img, rect)
+    def drawSelected(self, screen):
         button1pos = [self.rect.center[0] +20, self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos

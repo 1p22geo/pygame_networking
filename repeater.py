@@ -22,5 +22,5 @@ class Repeater(Host):
         pass
 
     
-    def draw_selected(self, screen):
+    def drawSelected(self, screen):
         pass

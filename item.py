@@ -26,3 +26,8 @@ class Item():
         
     def dragto(self, pos, button, board):
         pass
+
+    def drawOptions(self, screen):
+        pass
+    def drawSelected(self, screen):
+        pass

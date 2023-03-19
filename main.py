@@ -7,7 +7,7 @@ from addSwitch import AddSwitch
 from eventhandler import Handler
 pygame.init()
 
-size = width, height = 640, 480
+size = width, height = 1280, 720
 display = Display(size)
 board = Board()
 clock = pygame.time.Clock()
