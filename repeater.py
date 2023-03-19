@@ -20,3 +20,7 @@ class Repeater(Host):
     
     def send(self, board):
         pass
+
+    
+    def draw_selected(self, screen):
+        pass

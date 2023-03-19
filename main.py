@@ -3,6 +3,7 @@ from display import Display
 from board import Board
 from addButton import AddButton
 from addRepeater import AddRepeater
+from addSwitch import AddSwitch
 from eventhandler import Handler
 pygame.init()
 
@@ -13,10 +14,13 @@ clock = pygame.time.Clock()
 handler = Handler()
 
 
-button = AddButton(pygame.Rect(10,170,50,50))
+button = AddRepeater(pygame.Rect(5,130,60,60))
 board.add_object(button)
 
-button = AddRepeater(pygame.Rect(5,230,50,50))
+button = AddButton(pygame.Rect(10,200,50,50))
+board.add_object(button)
+
+button = AddSwitch(pygame.Rect(5,270,60,60))
 board.add_object(button)
 
 running = True

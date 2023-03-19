@@ -2,6 +2,7 @@ import pygame
 from linkable import Linkable
 from board import Board
 from host import Host
+from switch import Switch
 
 class Display():
     def __init__(self, size):
@@ -14,7 +15,7 @@ class Display():
         
         if selected >= 0:
              
-             self.draw_selected_dialog(board, selected)
+             board.objects[selected].draw_selected(self.screen)
         for item in board.objects:
             if issubclass(type(item), Linkable):
                 for link in item.links:
@@ -22,19 +23,8 @@ class Display():
         for item in board.get_objects():
             pygame.draw.rect(self.screen, (255,255,255), item.rect)
             self.screen.blit(item.image, item.rect)
-            if issubclass(type(item), Host):
-                selectedobject = item
-                pos = item.rect.center
-                font = pygame.font.SysFont(None, 25, False)
-                img = font.render('.'.join(selectedobject.IP), True, (0,0,0))
-                rect = img.get_rect()
-                rect.center = [pos[0], pos[1] + 30]
-                self.screen.blit(img, rect)
-                font = pygame.font.SysFont(None, 20, False)
-                img = font.render(selectedobject.mac, True, (0,0,0))
-                rect = img.get_rect()
-                rect.center = [pos[0], pos[1] + 50]
-                self.screen.blit(img, rect)
+            item.drawOptions(self.screen, selected)
+            
         for packet in board.get_packets():
             pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(packet.pos[0] - 5, packet.pos[1] - 5, 10, 10))
             packet.move()
@@ -44,18 +34,3 @@ class Display():
 
 
         pygame.display.flip()
-
-    def draw_selected_dialog(self, board:Board, selected):
-         selectedobject = board.objects[selected]
-         pos = selectedobject.rect.center
-         if selectedobject.selectable:
-            button1pos = [pos[0] +20, pos[1] - 60]
-            rect = pygame.Rect(0,0,30,30)
-            rect.center = button1pos
-            self.screen.blit(self.sendimg, rect)
-            button2pos = [pos[0] - 20, pos[1] - 60]
-            rect = pygame.Rect(0,0,30,30)
-            rect.center = button2pos
-            self.screen.blit(self.packetimg, rect)
-
-            

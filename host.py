@@ -1,4 +1,5 @@
 import appJar
+import pygame
 from linkable import Linkable
 from packet import Packet
 from board import Board
@@ -42,3 +43,24 @@ class Host(Linkable):
             
             packet = Packet(self.rect.center, linked, (self.mac, self.new_packet_data[0]), (self.IP, self.new_packet_data[1]))
             board.add_packet(packet)
+    
+    def drawOptions(self, screen, selected):
+        font = pygame.font.SysFont(None, 25, False)
+        img = font.render('.'.join(self.IP), True, (0,0,0))
+        rect = img.get_rect()
+        rect.center = [self.rect.center[0], self.rect.center[1] + 50]
+        screen.blit(img, rect)
+        font = pygame.font.SysFont(None, 20, False)
+        img = font.render(self.mac, True, (0,0,0))
+        rect = img.get_rect()
+        rect.center = [self.rect.center[0], self.rect.center[1] + 70]
+        screen.blit(img, rect)
+    def draw_selected(self, screen):
+        button1pos = [self.rect.center[0] +20, self.rect.center[1] - 60]
+        rect = pygame.Rect(0,0,30,30)
+        rect.center = button1pos
+        screen.blit(self.sendimg, rect)
+        button2pos = [self.rect.center[0] - 20, self.rect.center[1] - 60]
+        rect = pygame.Rect(0,0,30,30)
+        rect.center = button2pos
+        screen.blit(self.packetimg, rect)
