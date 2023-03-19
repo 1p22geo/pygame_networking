@@ -2,21 +2,30 @@ import pygame
 from host import Host
 from board import Board
 from packet import Packet
+from DHCP_discover import DHCP_discover
+from DHCP_offer import DHCP_offer
 
 class Repeater(Host):
-    def __init__(self, rect, mac, IP, mask):
-        super().__init__(rect, mac, IP, mask)
+    def __init__(self, rect, mac):
+        super().__init__(rect, None)
         self.image = pygame.image.load('repeater.png')
-        self.mac = mac
-        self.IP = IP.split('.')
-        self.mask = mask.split('.')
-    
-    def recieve(self, packet:Packet, board:Board):
+        self.selectable = False
+    def forward_packet(self, packet, link, board:Board):
+        if isinstance(packet, DHCP_discover):
+            packet2 = DHCP_discover(self.rect.center, board.objects[link], packet.l2)
+            board.add_packet(packet2)
+        elif isinstance(packet, DHCP_offer):
+            packet2 = DHCP_offer(self.rect.center, board.objects[link], packet.l2, packet.l3, packet.mask, packet.gateway)
+            board.add_packet(packet2)
+        elif isinstance(packet, Packet):
+            packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
+            board.add_packet(packet2)
+        print(type(packet2))
+    def recieve(self, packet, board:Board):
         for link in self.links:
             linked = board.objects[link]
             if linked.rect.center != packet.startpos:
-                packet2 = Packet(self.rect.center, linked, packet.l2, packet.l3)
-                board.add_packet(packet2)
+                self.forward_packet(packet, link,board)
     
     def send(self, board):
         pass

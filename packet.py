@@ -1,4 +1,3 @@
-import pygame
 from traverse import Traverser
 
 class Packet(Traverser):

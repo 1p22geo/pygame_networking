@@ -1,4 +1,4 @@
-import pygame, math
+import math
 
 class Traverser():
     def __init__(self, pos:tuple, dest):

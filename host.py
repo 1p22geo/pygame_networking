@@ -3,20 +3,37 @@ import pygame
 from linkable import Linkable
 from packet import Packet
 from board import Board
+from DHCP_discover import DHCP_discover
+from DHCP_offer import DHCP_offer
 
 class Host(Linkable):
-    def __init__(self, rect, mac, IP, mask):
+    def __init__(self, rect, mac):
         super().__init__(rect)
         self.app = False
         self.mac = mac
-        self.IP = IP.split('.')
-        self.mask = mask.split('.')
-        self.new_packet_data = ('ffff', '192.168.50.0')
+        self.IP = ()
+        self.mask = None
+        self.gateway = None
+        self.new_packet_data = ('ffff', None)
+        self.DHCP_configured = False
         self.sendimg = pygame.image.load('send.png')
         self.packetimg = pygame.image.load('packet.png')
+        self.dhcpimg = pygame.image.load('DHCP.png')
     
-    def recieve(self, packet, board):
-        if packet.l3[1] == '.'.join(self.IP):
+    def send_DHCP(self, board:Board):
+        for link in self.links:
+            linked = board.objects[link]
+            
+            packet = DHCP_discover(self.rect.center, linked, (self.mac, 'ffff'))
+            board.add_packet(packet)
+            
+    def recieve(self, packet, board:Board):
+        if isinstance(packet, DHCP_offer):
+            self.IP = packet.l3[1]
+            self.mask = packet.mask
+            self.gateway = packet.gateway
+            self.DHCP_configured = True
+        elif packet.l3 and self.IP and (packet.l3[1] == '.'.join(self.IP)):
             print('Recieved a packet at {}'.format('.'.join(self.IP)))
 
     def press(self, button):
@@ -63,11 +80,21 @@ class Host(Linkable):
         rect.center = [self.rect.center[0] + 35, self.rect.center[1] - 35]
         screen.blit(img, rect)
     def drawSelected(self, screen):
-        button1pos = [self.rect.center[0] +20, self.rect.center[1] - 60]
-        rect = pygame.Rect(0,0,30,30)
-        rect.center = button1pos
-        screen.blit(self.sendimg, rect)
-        button2pos = [self.rect.center[0] - 20, self.rect.center[1] - 60]
-        rect = pygame.Rect(0,0,30,30)
-        rect.center = button2pos
-        screen.blit(self.packetimg, rect)
+        if self.DHCP_configured:
+            button1pos = [self.rect.center[0] +40, self.rect.center[1] - 60]
+            rect = pygame.Rect(0,0,30,30)
+            rect.center = button1pos
+            screen.blit(self.sendimg, rect)
+            button1pos = [self.rect.center[0], self.rect.center[1] - 60]
+            rect = pygame.Rect(0,0,30,30)
+            rect.center = button1pos
+            screen.blit(self.dhcpimg, rect)
+            button2pos = [self.rect.center[0] - 40, self.rect.center[1] - 60]
+            rect = pygame.Rect(0,0,30,30)
+            rect.center = button2pos
+            screen.blit(self.packetimg, rect)
+        else:
+            button1pos = [self.rect.center[0], self.rect.center[1] - 60]
+            rect = pygame.Rect(0,0,30,30)
+            rect.center = button1pos
+            screen.blit(self.dhcpimg, rect)

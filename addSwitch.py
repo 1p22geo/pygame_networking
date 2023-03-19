@@ -13,8 +13,8 @@ class AddSwitch(Item):
     def dragto(self, pos, button, board:Board):
         newrect = pygame.Rect(0,0, 60, 60)
         newrect.center = pos
-        IP, mac = generator.new_host()
-        newitem = Switch(newrect,mac, IP, '255.255.255.0')
+        mac = generator.new_host()
+        newitem = Switch(newrect,mac)
         board.add_object(newitem)
     
     def dragged(self, pos, button):
