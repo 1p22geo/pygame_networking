@@ -1,17 +1,22 @@
 class IP():
     def __init__(self, addr):
+        self.tuple:tuple = tuple()
+        self.str:str = str()
         if isinstance(addr, str):
-            self.tuple = addr.split('.')
-            self.str = addr
-        if isinstance(addr, tuple):
-            self.tuple = addr
-            self.str = '.'.join(addr)
-        if isinstance(addr, list):
-            self.tuple = tuple(addr)
-            self.str = '.'.join(addr)
-        if isinstance(addr, IP) :
-            self.tuple = addr.tuple
-            self.str = addr.str
+            self.tuple:tuple = tuple(addr.split('.'))
+            self.str:str = addr
+        elif isinstance(addr, tuple):
+            self.tuple:tuple = tuple(addr)
+            self.str:str = '.'.join(addr)
+        elif isinstance(addr, list):
+            self.tuple:tuple = tuple(addr)
+            self.str:str = '.'.join(addr)
+        elif isinstance(addr, IP) :
+            self.tuple:tuple = tuple(addr.tuple)
+            self.str:str = addr.str
+        else:
+            self.tuple:tuple = ()
+            self.str:str = str('')
     def check(self, addr, *args):
         if len(args) >= 1:
             # we have a subnet mask - args[0]

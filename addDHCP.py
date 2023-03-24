@@ -14,7 +14,7 @@ class AddDHCP(Item):
         newrect = pygame.Rect(0,0, 80, 80)
         newrect.center = pos
         mac = generator.new_host()
-        newitem = DHCP_server(newrect,mac, '')
+        newitem = DHCP_server(newrect,mac)
         board.add_object(newitem)
     
     def dragged(self, pos, button):

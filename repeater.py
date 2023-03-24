@@ -28,7 +28,7 @@ class Repeater(Host):
         elif isinstance(packet, Packet):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
             board.add_packet(packet2)
-    def recieve(self, packet, board:Board):
+    def receive(self, packet, board:Board):
         for link in self.links:
             linked = board.objects[link]
             if linked.rect.center != packet.startpos:

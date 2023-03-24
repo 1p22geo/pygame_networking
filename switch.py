@@ -1,11 +1,11 @@
-import pygame
-from host import Host
+from DHCP_discover import DHCP_discover
+from ARPresponse import ARPresponse
+from ARPrequest import ARPrequest
+from DHCP_offer import DHCP_offer
 from packet import Packet
 from board import Board
-from DHCP_offer import DHCP_offer
-from DHCP_discover import DHCP_discover
-from ARPrequest import ARPrequest
-from ARPresponse import ARPresponse
+from host import Host
+import pygame
 import copy
 
 class Switch(Host):
@@ -17,6 +17,9 @@ class Switch(Host):
         ...or sth like that
         Assigns link numbers to MAC adresses
         ARP cache - not today!
+        '''
+        '''
+        ACHUALLY yesterday.
         '''
     
         self.image = pygame.image.load('switch.png')
@@ -42,7 +45,7 @@ class Switch(Host):
             board.add_packet(packet2)
         
     
-    def recieve(self, packet:Packet, board:Board):
+    def receive(self, packet:Packet, board:Board):
         if not (packet.l2[0] in self.table.keys()):
             for link in self.links:
                 if board.objects[link].rect.center == packet.startpos:

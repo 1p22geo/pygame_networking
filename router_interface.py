@@ -9,5 +9,5 @@ class Router_interface(Host):
         self.id = if_id
     def dragged(self, pos, button):
         pass
-    def recieve(self, packet, board:Board):
-        board[self.router].recieve(packet,board, self.id)
+    def receive(self, packet, board:Board):
+        board[self.router].receive(packet,board, self.id)

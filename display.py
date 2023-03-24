@@ -51,7 +51,7 @@ class Display():
                 pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(packet.pos[0] - 5, packet.pos[1] - 5, 10, 10))
             packet.move()
             if packet.reached:
-                packet.dest.recieve(packet, board)
+                packet.dest.receive(packet, board)
                 board.del_packet(packet.get_id())
         
         for item in board.get_objects():

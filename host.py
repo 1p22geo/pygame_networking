@@ -1,19 +1,20 @@
-import appJar
-import pygame
+from DHCP_discover import DHCP_discover
+from ARPresponse import ARPresponse
+from ARPrequest import ARPrequest
+from DHCP_offer import DHCP_offer
 from linkable import Linkable
 from packet import Packet
 from board import Board
-from DHCP_discover import DHCP_discover
-from DHCP_offer import DHCP_offer
-from ARPrequest import ARPrequest
-from ARPresponse import ARPresponse
+from IP import IP
+import appJar
+import pygame
 
 class Host(Linkable):
     def __init__(self, rect, mac):
         super().__init__(rect)
         self.app = False
         self.mac = mac
-        self.IP = ()
+        self.IP = None
         self.mask = None
         self.gateway = None
         self.new_packet_data = ('ffff', None)
@@ -32,7 +33,7 @@ class Host(Linkable):
             packet = DHCP_discover(self.rect.center, linked, (self.mac, 'ffff'))
             board.add_packet(packet)
             
-    def recieve(self, packet, board:Board):
+    def receive(self, packet, board:Board):
         if isinstance(packet, DHCP_offer):
             if packet.l2[1] == self.mac:
                 self.IP = packet.l3[1]
@@ -40,23 +41,23 @@ class Host(Linkable):
                 self.gateway = packet.gateway
                 self.DHCP_configured = True
         elif isinstance(packet, ARPresponse):
-            self.ARP['.'.join(packet.l3[0])] = packet.l2[0]
+            self.ARP[packet.l3[0].str] = packet.l2[0]
             if packet.l2[1] == self.mac:
                 for p in self.waitingforARP:
-                    if p == packet.l3[0]:
+                    if p == packet.l3[0].str:
                         for link in self.links:
                             linked = board.objects[link]
-                            packet2 = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target]), (self.IP, self.target))
+                            packet2 = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target]), (self.IP, IP(p)))
                             board.add_packet(packet2)
         elif isinstance(packet, ARPrequest):
-            self.ARP['.'.join(packet.l3[0])] = packet.l2[0]
-            if packet.l3 and self.IP and ('.'.join(packet.l3[1]) == '.'.join(self.IP)):
+            self.ARP[packet.l3[0].str] = packet.l2[0]
+            if packet.l3 and self.IP and (packet.l3[1].str == self.IP.str):
                 for link in self.links:
                     linked = board.objects[link]
                     packet2 = ARPresponse(self.rect.center, linked, (self.mac, packet.l2[0]), (self.IP,packet.l3[0]))
                     board.add_packet(packet2)
-        elif packet.l3 and self.IP and ('.'.join(packet.l3[1]) == '.'.join(self.IP)):
-            print('Recieved a packet at {}'.format('.'.join(self.IP)))
+        elif packet.l3 and self.IP and (packet.l3[1].str == self.IP.str):
+            print('received a packet at {}'.format(self.IP.str))
 
     def press(self, button):
         if button == 'Cancel':
@@ -64,7 +65,7 @@ class Host(Linkable):
             self.app = False
         else:
             ip = self.app.getEntry("IP adress :")
-            self.target = tuple(ip.split('.'))
+            self.target = IP(ip)
             self.app.stop()
             self.app = False
         
@@ -79,8 +80,8 @@ class Host(Linkable):
     def send(self, board:Board):
         for link in self.links:
             linked = board.objects[link]
-            if '.'.join(self.target) in self.ARP.keys():
-                packet = Packet(self.rect.center, linked, (self.mac, self.ARP['.'.join(self.target)]), (self.IP, self.target))
+            if self.target.str in self.ARP.keys():
+                packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target.str]), (self.IP, self.target))
                 board.add_packet(packet)
             else:
                 # Send ARP request
@@ -90,7 +91,7 @@ class Host(Linkable):
     
     def drawOptions(self, screen):
         font = pygame.font.SysFont(None, 25, False)
-        img = font.render('.'.join(self.IP), True, (0,0,0), (255,255,255))
+        img = font.render(self.IP.str, True, (0,0,0), (255,255,255))
         rect = img.get_rect()
         rect.center = [self.rect.center[0], self.rect.center[1] + 50]
         screen.blit(img, rect)
