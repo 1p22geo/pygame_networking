@@ -5,7 +5,7 @@ class DHCP_gen():
         self.hosts = 0
         self.macs = ['ffff']
     def new_host(self):
-        if self.hosts > 140:
+        if self.hosts > 250:
             raise Exception('Too many hosts. DHCP server crashed.')
         mac = 'ffff'
         while mac in self.macs:
