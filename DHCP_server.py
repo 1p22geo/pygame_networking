@@ -20,12 +20,12 @@ class DHCP_server(Host):
         self.hosts[0] = self.IP.str
         self.hosts[1] = self.gateway.str
     def receive(self, packet, board:Board):
-        adress = self.IP.tuple[:]
+        adress = list(self.IP.tuple[:])
         if isinstance(packet, DHCP_discover):
             if self.mask == '/24':
                 while '.'.join(adress) in self.hosts:
                     adress[-1] = str(random.randint(self.range[0], self.range[1]))
-            if self.mask == '/16':
+            elif self.mask == '/16':
                 while '.'.join(adress) in self.hosts:
                     adress[-1] = str(random.randint(self.range[0], self.range[1]))
                     adress[-2] = str(random.randint(self.range[0], self.range[1]))

@@ -26,10 +26,13 @@ class Router(Host):
 
         
         self.ARP = {}
+        self.image = pygame.image.load('switch.png')
+        self.ifimage = pygame.image.load('DHCP.png')
+        self.routeimg = pygame.image.load('route.png')
         
     def add_interface(self, board:Board):
         mac = generator.new_host()
-        interface = Router_interface(pygame.Rect(0,0,50,50), mac, self.get_id())
+        interface = Router_interface(pygame.Rect(0,0,50,50), mac, self.get_id(), len(self.interfaces))
         board.add_object(interface)
         self.interfaces.append(interface)
 
@@ -116,24 +119,29 @@ class Router(Host):
     def add(self,button):
         self.app.showSubWindow('one')
 
+    def dragged(self, pos, button):
+        if button == 1:
+            self.rect.center = pos
+            self.update_interfaces()
+
     def update_interfaces(self):
         match len(self.interfaces):
             case 0 :
                 pass
             case 1:
-                self.interfaces[0].rect.center = (self.rect[0], self.rect[1] - 50)
+                self.interfaces[0].rect.center = (self.rect.center[0], self.rect[1] - 50)
             case 2:
-                self.interfaces[0].rect.center = (self.rect[0] - 50, self.rect[1])
-                self.interfaces[1].rect.center = (self.rect[0] + 50, self.rect[1])
+                self.interfaces[0].rect.center = (self.rect.center[0] - 2*50, self.rect.center[1])
+                self.interfaces[1].rect.center = (self.rect.center[0] + 2*50, self.rect.center[1])
             case 3:
-                self.interfaces[0].rect.center = (self.rect[0] - 0.866*50, self.rect[1] + 25)
-                self.interfaces[1].rect.center = (self.rect[0] + 0.866*50, self.rect[1] + 25)
-                self.interfaces[2].rect.center = (self.rect[0], self.rect[1] - 50)
+                self.interfaces[0].rect.center = (self.rect.center[0] - 2*0.866*50, self.rect.center[1] + 2*25)
+                self.interfaces[1].rect.center = (self.rect.center[0] + 2*0.866*50, self.rect.center[1] + 2*25)
+                self.interfaces[2].rect.center = (self.rect.center[0], self.rect[1] - 50)
             case 4:
-                self.interfaces[0].rect.center = (self.rect[0] - 35, self.rect[1] - 35)
-                self.interfaces[1].rect.center = (self.rect[0] + 35, self.rect[1] - 35)
-                self.interfaces[0].rect.center = (self.rect[0] - 35, self.rect[1] + 35)
-                self.interfaces[1].rect.center = (self.rect[0] + 35, self.rect[1] + 35)
+                self.interfaces[0].rect.center = (self.rect.center[0] - 2*35, self.rect.center[1] - 2*35)
+                self.interfaces[1].rect.center = (self.rect.center[0] + 2*35, self.rect.center[1] - 2*35)
+                self.interfaces[2].rect.center = (self.rect.center[0] - 2*35, self.rect.center[1] + 2*35)
+                self.interfaces[3].rect.center = (self.rect.center[0] + 2*35, self.rect.center[1] + 2*35)
             case _:
                 raise Exception('Too much interfaces')
     def receive(self, packet, board: Board, interface):
@@ -176,3 +184,14 @@ class Router(Host):
                     packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.target)
                     board.add_packet(packet)
                     self.waitingforARP.append((Packet(board.objects[interface].rect.center, linked, (self.mac, '<MISSING>'), packet.l3), [route[0], dest]))
+    def drawSelected(self, screen):
+        button1pos = [self.rect.center[0] + 30, self.rect.center[1] - 100]
+        rect = pygame.Rect(0,0,30,30)
+        rect.center = button1pos
+        screen.blit(self.ifimage, rect)
+        button1pos = [self.rect.center[0] - 30, self.rect.center[1] - 100]
+        rect = pygame.Rect(0,0,30,30)
+        rect.center = button1pos
+        screen.blit(self.routeimg, rect)
+    def drawOptions(self, screen):
+        pass

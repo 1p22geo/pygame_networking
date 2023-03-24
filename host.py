@@ -14,7 +14,7 @@ class Host(Linkable):
         super().__init__(rect)
         self.app = False
         self.mac = mac
-        self.IP = None
+        self.IP = IP(())
         self.mask = None
         self.gateway = None
         self.new_packet_data = ('ffff', None)
@@ -44,10 +44,10 @@ class Host(Linkable):
             self.ARP[packet.l3[0].str] = packet.l2[0]
             if packet.l2[1] == self.mac:
                 for p in self.waitingforARP:
-                    if p == packet.l3[0].str:
+                    if p.str == packet.l3[0].str:
                         for link in self.links:
                             linked = board.objects[link]
-                            packet2 = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target]), (self.IP, IP(p)))
+                            packet2 = Packet(self.rect.center, linked, (self.mac, self.ARP[p.str]), (self.IP, IP(p)))
                             board.add_packet(packet2)
         elif isinstance(packet, ARPrequest):
             self.ARP[packet.l3[0].str] = packet.l2[0]

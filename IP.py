@@ -34,3 +34,7 @@ class IP():
         else:
             # we don't have a mask - we check for identical adresses ( /32 mask, if you will)
             return self.tuple == ip.tuple
+    def __str__(self):
+        return self.str
+    def __repr__(self) -> str:
+        return 'IP(\'' + self.str + '\')'

@@ -1,4 +1,5 @@
 import pygame
+from addRouter import AddRouter
 from display import Display
 from board import Board
 from addButton import AddButton
@@ -25,6 +26,9 @@ button = AddSwitch(pygame.Rect(15,270,60,60))
 board.add_object(button)
 
 button = AddDHCP(pygame.Rect(5,340,80,80))
+board.add_object(button)
+
+button = AddRouter(pygame.Rect(15,430,80,80))
 board.add_object(button)
 
 running = True
