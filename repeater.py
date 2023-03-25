@@ -23,11 +23,12 @@ class Repeater(Host):
             packet2 = ARPresponse(self.rect.center, board.objects[link], packet.l2, packet.l3)
             board.add_packet(packet2)
         elif isinstance(packet,ARPrequest):
-            packet2 = ARPrequest(self.rect.center, board.objects[link], packet.srcmac, packet.srcip, packet.destip)
+            packet2 = ARPrequest(self.rect.center, board.objects[link], packet.l2[0], packet.l3[0], packet.l3[1])
             board.add_packet(packet2)
         elif isinstance(packet, Packet):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
             board.add_packet(packet2)
+            
     def receive(self, packet, board:Board):
         for link in self.links:
             linked = board.objects[link]

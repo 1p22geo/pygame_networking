@@ -182,12 +182,12 @@ class Router(Host):
                 if not dest:
                     dest = packet.l3[1]
                 if dest.str in self.ARP.keys():
-                    packet = Packet(inf.rect.center, linked, (inf.mac, self.ARP[dest.str]), packet.l3)
-                    board.add_packet(packet)
+                    packet1 = Packet(inf.rect.center, linked, (inf.mac, self.ARP[dest.str]), packet.l3)
+                    board.add_packet(packet1)
                 else:
                     # Send ARP request
-                    packet = ARPrequest(inf.rect.center, linked, inf.mac, inf.IP, dest)
-                    board.add_packet(packet)
+                    arppacket = ARPrequest(inf.rect.center, linked, inf.mac, inf.IP, dest)
+                    board.add_packet(arppacket)
                     self.waitingforARP.append((Packet(inf.rect.center, linked, (self.mac, '<MISSING>'), packet.l3), [route[0], dest]))
     def drawSelected(self, screen):
         button1pos = [self.rect.center[0] + 30, self.rect.center[1] - 100]

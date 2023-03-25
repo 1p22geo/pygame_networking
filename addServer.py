@@ -1,21 +1,21 @@
 import pygame
 from item import Item
-from host import Host
 from board import Board
-import random
 from dhcp import generator
+from server import Server
 
-class AddButton(Item):
+class AddServer(Item):
     def __init__(self, rect):
         super().__init__(rect)
         self.selectable = False
+        self.image = pygame.image.load('server.png')
         
 
     def dragto(self, pos, button, board:Board):
-        newrect = pygame.Rect(0,0, 50, 50)
+        newrect = pygame.Rect(0,0, 60, 80)
         newrect.center = pos
         mac = generator.new_host()
-        newitem = Host(newrect,mac)
+        newitem = Server(newrect,mac)
         board.add_object(newitem)
     
     def dragged(self, pos, button):
