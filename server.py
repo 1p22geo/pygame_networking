@@ -75,6 +75,7 @@ class Server(Host):
             self.app.setStretch('both')
             self.app.setSticky('news')
             self.app.addTextArea("Code to execute for POST requests: ")
+            self.app.setTextArea("Code to execute for POST requests: ", self.code)
         with self.app.tab('GET code'):
             self.app.setStretch('column')
             self.app.setSticky('nws')
@@ -82,6 +83,7 @@ class Server(Host):
             self.app.setStretch('both')
             self.app.setSticky('news')
             self.app.addTextArea("Code to execute before GET requests: ")
+            self.app.setTextArea("Code to execute before GET requests: ", self.getcode)
         with self.app.tab('GET expression'):
             self.app.setStretch('column')
             self.app.setSticky('nws')
@@ -89,6 +91,7 @@ class Server(Host):
             self.app.setStretch('both')
             self.app.setSticky('news')
             self.app.addTextArea("Expression to evaluate for GET requests: ")
+            self.app.setTextArea("Expression to evaluate for GET requests: ", self.get)
             self.app.setStretch('column')
             self.app.setSticky('ews')
             self.app.addLabel("desc4", "The expression must evaluate to a string.")

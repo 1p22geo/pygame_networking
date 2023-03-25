@@ -149,38 +149,66 @@ class Host(Linkable):
     def drawSelected(self, screen:pygame.surface.Surface):
         if self.receivedfrom[0]:
             tablepos = (self.rect.center[0] - 150, self.rect.center[1] - 280)
-            pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 300, 200))
-            pygame.draw.rect(screen, (0,0,0),pygame.Rect(tablepos[0], tablepos[1], 300, 200), 2)
+            WIDTH = 300
+            pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], WIDTH, 200))
+            pygame.draw.rect(screen, (0,0,0),pygame.Rect(tablepos[0], tablepos[1], WIDTH, 200), 2)
             font = pygame.font.SysFont(None, 20, False)
             img = font.render(self.receivedfrom[0], True, (0,0,0))
             rect = img.get_rect()
             rect.center = (self.rect.centerx, self.rect.centery-300)
             screen.blit(img, rect)
             if self.receivedfrom[1]:
-                n = 0
+                padding = 0
                 for line in self.receivedfrom[1].split('\n'):
                     indexofbracket = line.find('>')
                     if indexofbracket > 0:
-                        markup = line[:indexofbracket-1].split('; ')
+                        markup = line[:indexofbracket].split('; ')
                         data = {}
                         keys = []
-                        for entry in markup:
-                            record = entry.split(':')
-                            data[record[0]] = record[1]
-                            keys.append(record[0])
-                        if 'font' in keys:
-                            fontsize = data['font']
-                        else:
+                        try:
+                            for entry in markup:
+                                record = entry.split(':')
+                                data[record[0]] = record[1]
+                                keys.append(record[0])
+                            if 'font' in keys:
+                                fontsize = int(data['font'])
+                            else:
+                                fontsize = 20
+                            if 'color' in keys:
+                                color = eval(data['color'])
+                            else:
+                                color = (0,0,0)
+                            if 'align' in keys:
+                                align = data['align']
+                            else:
+                                align = 'left'
+                            if 'padding' in keys:
+                                addedpadding =  int(data['padding'])
+                            else:
+                                addedpadding = 0
+                        except Exception as e:
+                            print(e)
                             fontsize = 20
+                            color = (0,0,0)
+                            addedpadding = 0
+                            align = 'left'
                         font = pygame.font.SysFont(None, fontsize, False)
-                        img = font.render(str(line[indexofbracket+1:]), True, (0,0,0))
-                        screen.blit(img, (tablepos[0] + 5, tablepos[1] + 5 + 15*n))
-                        n+=1
+                        img = font.render(str(line[indexofbracket+1:]), True, color)
+                        rect = img.get_rect()
+                        match align:
+                            case 'left':
+                                rect.topleft = (tablepos[0] + 5, tablepos[1] + 5 + padding)
+                            case 'right':
+                                rect.topright = (tablepos[0] + WIDTH - 5, tablepos[1] + 5 + padding )
+                            case 'center':
+                                rect.topleft = (tablepos[0] + WIDTH/2 - rect.width/2, tablepos[1] + 5 +padding)
+                        screen.blit(img, rect)
+                        padding += fontsize * 1/2 + addedpadding
                     else:
                         font = pygame.font.SysFont(None, 20, False)
                         img = font.render(str(line), True, (0,0,0))
-                        screen.blit(img, (tablepos[0] + 5, tablepos[1] + 5 + 15*n))
-                        n+=1
+                        screen.blit(img, (tablepos[0] + 5, tablepos[1] + 5 + padding))
+                        padding += 20
             
         if self.DHCP_configured:
             button1pos = [self.rect.center[0] +40, self.rect.center[1] - 60]
