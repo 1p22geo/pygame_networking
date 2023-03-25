@@ -27,8 +27,9 @@ class Repeater(Host):
             board.add_packet(packet2)
         elif isinstance(packet, Packet):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
+            packet2.payload = packet.payload
             board.add_packet(packet2)
-            
+
     def receive(self, packet, board:Board):
         for link in self.links:
             linked = board.objects[link]

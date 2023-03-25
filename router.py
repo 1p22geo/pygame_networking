@@ -154,6 +154,7 @@ class Router(Host):
                     #print(p[1][1], packet.l3)
                     if p[1][1].str == packet.l3[0].str:
                         p[0].l2 = (p[0].l2[0],packet.l2[0])
+                        p[0].payload = p[1][2]
                         board.add_packet(p[0])
             return
         elif isinstance(packet, ARPrequest):
@@ -183,12 +184,13 @@ class Router(Host):
                     dest = packet.l3[1]
                 if dest.str in self.ARP.keys():
                     packet1 = Packet(inf.rect.center, linked, (inf.mac, self.ARP[dest.str]), packet.l3)
+                    packet1.payload = packet.payload
                     board.add_packet(packet1)
                 else:
                     # Send ARP request
                     arppacket = ARPrequest(inf.rect.center, linked, inf.mac, inf.IP, dest)
                     board.add_packet(arppacket)
-                    self.waitingforARP.append((Packet(inf.rect.center, linked, (self.mac, '<MISSING>'), packet.l3), [route[0], dest]))
+                    self.waitingforARP.append((Packet(inf.rect.center, linked, (self.mac, '<MISSING>'), packet.l3), [route[0], dest, packet.payload]))
     def drawSelected(self, screen):
         button1pos = [self.rect.center[0] + 30, self.rect.center[1] - 100]
         rect = pygame.Rect(0,0,30,30)
