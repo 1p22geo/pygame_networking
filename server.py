@@ -16,7 +16,7 @@ class Server(Host):
 
     def receive(self, packet, board:Board):
         if type(packet) == Packet:
-            print('HTTP {0} {1}\n{2}'.format(packet.payload['method'], packet.payload['resource'], packet.payload['body']))
+            #print('HTTP {0} {1}\n{2}'.format(packet.payload['method'], packet.payload['resource'], packet.payload['body']))
             if packet.payload['method'] == 'POST':
                 db = self.database
                 host = packet.l3[0].str
@@ -30,11 +30,11 @@ class Server(Host):
                 host = packet.l3[0].str
                 try:
                     exec(self.getcode)
-                    print('Code worked')
+                    #print('Code worked')
                     response = eval(self.get)
-                    print('Expression worked')
+                    #print('Expression worked')
                 except Exception as e:
-                    print(e)
+                    #print(e)
                     response = '500 Server error'
                 
             self.target = packet.l3[0]
@@ -49,7 +49,7 @@ class Server(Host):
             self.code = self.app.getTextArea("Code to execute for POST requests: ")
             self.getcode = self.app.getTextArea("Code to execute before GET requests: ")
             self.get = self.app.getTextArea("Expression to evaluate for GET requests: ")
-            print(self.code, self.getcode, self.get, sep='\n\n\n')
+            #print(self.code, self.getcode, self.get, sep='\n\n\n')
             self.app.stop()
             self.app = False
         
