@@ -26,11 +26,14 @@ class Router(Host):
 
         
         self.ARP = {}
-        self.image = pygame.image.load('switch.png')
+        self.image = pygame.image.load('router.png')
         self.ifimage = pygame.image.load('DHCP.png')
         self.routeimg = pygame.image.load('route.png')
+        self.frame = 'Routes'
         
     def add_interface(self, board:Board):
+        if len(self.interfaces) >= 4:
+            return
         mac = generator.new_host()
         interface = Router_interface(pygame.Rect(0,0,50,50), mac, self.get_id(), len(self.interfaces))
         board.add_object(interface)
@@ -41,18 +44,17 @@ class Router(Host):
     def drag(self,widget):
         
         print("Dragged from:", widget)
-        self.dragged = widget
+        self.draggedItem = widget
 
     def drop(self,widget):
-        global dragged
         print("Dropped on:", widget)
         if len(widget) == 2:
-            self.routes.insert(int(widget[1]),self.routes.pop(int(dragged[1])))
+            self.routes.insert(int(widget[1]),self.routes.pop(int(self.draggedItem[1])))
         if widget == 'delete':
-            self.routingtable.pop(self.routes[int(dragged[1])])
-            self.routes.pop(int(dragged[1]))
+            self.routingtable.pop(self.routes[int(self.draggedItem[1])])
+            self.routes.pop(int(self.draggedItem[1]))
         self.draw_routes()
-        dragged = None
+        self.draggedItem = None
 
     def draw_routes(self):
         self.app.openLabelFrame(self.frame)
@@ -95,7 +97,6 @@ class Router(Host):
 
     def start_app(self):
         self.app = gui('Router')
-        self.frame = 'frame'
         self.app.startSubWindow("one", modal=True)
         self.app.addLabel("label1", "Configure new route")
         self.app.addLabelEntry('Route: ')
@@ -146,11 +147,13 @@ class Router(Host):
                 raise Exception('Too much interfaces')
     def receive(self, packet, board: Board, interface):
         if isinstance(packet, ARPresponse):
+            inf = self.interfaces[interface]
             self.ARP[packet.l3[0].str] = packet.l2[0]
-            if packet.l2[1] == self.mac:
+            if packet.l2[1] == inf.mac:
                 for p in self.waitingforARP:
-                    if p[1][1] == packet.l3[0].str:
-                        p[0].l2[1] = packet.l2[0]
+                    print(p[1][1], packet.l3)
+                    if p[1][1].str == packet.l3[0].str:
+                        p[0].l2 = (p[0].l2[0],packet.l2[0])
                         board.add_packet(p[0])
             return
         elif isinstance(packet, ARPrequest):
@@ -171,20 +174,21 @@ class Router(Host):
             else:
                 return
             route = self.routingtable[packet_route]
+            print("Interface {0} recieved a packet from {1}, forwarding to {2}".format(interface, packet.l3[0], route))
             inf = self.interfaces[route[0]]
             for link in inf.links:
                 linked = board.objects[link]
                 dest = route[1]
                 if not dest:
                     dest = packet.l3[1]
-                if dest in self.ARP.keys():
-                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[dest]), packet.l3)
+                if dest.str in self.ARP.keys():
+                    packet = Packet(inf.rect.center, linked, (inf.mac, self.ARP[dest.str]), packet.l3)
                     board.add_packet(packet)
                 else:
                     # Send ARP request
-                    packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.target)
+                    packet = ARPrequest(inf.rect.center, linked, inf.mac, inf.IP, dest)
                     board.add_packet(packet)
-                    self.waitingforARP.append((Packet(board.objects[interface].rect.center, linked, (self.mac, '<MISSING>'), packet.l3), [route[0], dest]))
+                    self.waitingforARP.append((Packet(inf.rect.center, linked, (self.mac, '<MISSING>'), packet.l3), [route[0], dest]))
     def drawSelected(self, screen):
         button1pos = [self.rect.center[0] + 30, self.rect.center[1] - 100]
         rect = pygame.Rect(0,0,30,30)
@@ -194,5 +198,26 @@ class Router(Host):
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
         screen.blit(self.routeimg, rect)
+        tablepos = [self.rect.centerx + 70, self.rect.centery - 50]
+        height = 300
+        pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 150, height))
+        pygame.draw.rect(screen, (0,0,0),pygame.Rect(tablepos[0], tablepos[1], 150, height), 2)
+        font = pygame.font.SysFont(None, 20, False)
+        img = font.render(str("ARP cache"), True, (0,0,0))
+        rect = img.get_rect()
+        rect.center = [tablepos[0] + 75, tablepos[1] + 10]
+        screen.blit(img, rect)
+        ypos = 10
+        for oip,omac in self.ARP.items():
+            if ypos > height:
+                break
+            ypos += 15
+            font = pygame.font.SysFont(None, 20, False)
+            img = font.render(str(oip), True, (0,0,0))
+            screen.blit(img, (tablepos[0] + 10, tablepos[1] + ypos))
+            img = font.render(str(omac), True, (0,0,0))
+            rect = img.get_rect()
+            rect.topright = [tablepos[0] + 140, tablepos[1] + ypos]
+            screen.blit(img, rect)
     def drawOptions(self, screen):
         pass

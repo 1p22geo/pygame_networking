@@ -36,19 +36,28 @@ class Display():
             elif isinstance(packet, ARPrequest):
                 pygame.draw.rect(self.screen, (0,0,255), pygame.Rect(packet.pos[0] - 5, packet.pos[1] - 5, 10, 10))
                 font = pygame.font.SysFont(None, 15, False)
-                img = font.render(str(packet.l2[0]), True, (0,255,0))
+                img = font.render(str(packet.l3[1]), True, (0,255,0))
                 rect = img.get_rect()
                 rect.bottomleft = [packet.pos[0] + 3, packet.pos[1] - 3]
                 self.screen.blit(img, rect)
             elif isinstance(packet, ARPresponse):
                 pygame.draw.rect(self.screen, (0,0,255), pygame.Rect(packet.pos[0] - 5, packet.pos[1] - 5, 10, 10))
                 font = pygame.font.SysFont(None, 15, False)
-                img = font.render(str(packet.l2[0]) + ' - ' + str(packet.l2[1]), True, (0,255,0))
+                img = font.render(str(packet.l3[0]) + ' - ' + str(packet.l2[0]), True, (0,255,0))
                 rect = img.get_rect()
                 rect.bottomleft = [packet.pos[0] + 3, packet.pos[1] - 3]
                 self.screen.blit(img, rect)
             else:
                 pygame.draw.rect(self.screen, (0,0,0), pygame.Rect(packet.pos[0] - 5, packet.pos[1] - 5, 10, 10))
+                font = pygame.font.SysFont(None, 15, False)
+                img = font.render(str(packet.l3[0]) + ' - ' + str(packet.l3[1]), True, (0,0,0))
+                rect = img.get_rect()
+                rect.bottomleft = [packet.pos[0] + 3, packet.pos[1] - 3]
+                self.screen.blit(img, rect)
+                img = font.render(str(packet.l2[0]) + ' - ' + str(packet.l2[1]), True, (0,0,0))
+                rect = img.get_rect()
+                rect.bottomleft = [packet.pos[0] + 3, packet.pos[1] - 15]
+                self.screen.blit(img, rect)
             packet.move()
             if packet.reached:
                 packet.dest.receive(packet, board)

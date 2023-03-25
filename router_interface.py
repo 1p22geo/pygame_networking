@@ -11,7 +11,7 @@ class Router_interface(Host):
         super().__init__(rect, mac)
         self.router = router
         self.id = if_id
-        self.image = pygame.image.load('switch.png')
+        self.image = pygame.image.load('interface.png')
     def dragged(self, pos, button):
         pass
     def receive(self, packet, board:Board):
@@ -27,12 +27,12 @@ class Router_interface(Host):
         font = pygame.font.SysFont(None, 25, False)
         img = font.render(self.IP.str, True, (0,0,0), (255,255,255))
         rect = img.get_rect()
-        rect.center = [self.rect.center[0], self.rect.center[1] + 50]
+        rect.center = [self.rect.center[0], self.rect.center[1] + 35]
         screen.blit(img, rect)
         font = pygame.font.SysFont(None, 20, False)
         img = font.render(self.mac, True, (0,0,0), (255,255,255))
         rect = img.get_rect()
-        rect.center = [self.rect.center[0], self.rect.center[1] + 70]
+        rect.center = [self.rect.center[0], self.rect.center[1] + 50]
         screen.blit(img, rect)
         font = pygame.font.SysFont(None, 20, False)
         img = font.render(str(self.get_id()), True, (0,0,0), (255,255,255))
