@@ -1,7 +1,9 @@
 import pygame
 from DHCP_offer import DHCP_offer
+from IP import IP
 from board import Board
 from host import Host
+import appJar
 
 
 class Router_interface(Host):
@@ -43,7 +45,28 @@ class Router_interface(Host):
         rect.center = [self.rect.center[0], self.rect.center[1] - 35]
         screen.blit(img, rect)
     def drawSelected(self, screen):
-        button1pos = [self.rect.center[0], self.rect.center[1] - 60]
+        button1pos = [self.rect.center[0]+30, self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
         screen.blit(self.dhcpimg, rect)
+        button1pos = [self.rect.center[0]-30, self.rect.center[1] - 60]
+        rect = pygame.Rect(0,0,30,30)
+        rect.center = button1pos
+        screen.blit(self.packetimg, rect)
+    def press(self, button):
+        if button == 'Cancel':
+            self.app.stop()
+            self.app = False
+        else:
+            self.IP = IP(self.app.getEntry("IP adress :"))
+            self.app.stop()
+            self.app = False
+        
+
+    def config(self):
+        print("aa")
+        self.app = appJar.gui()
+        self.app.addLabel("title", "Router interface configuration")
+        self.app.addLabelEntry("IP adress :")
+        self.app.addButtons(["Submit", "Cancel"], self.press)
+        self.app.go()

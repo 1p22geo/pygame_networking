@@ -4,6 +4,7 @@ import math
 from DHCP_server import DHCP_server
 from host import Host
 from router import Router
+from router_interface import Router_interface
 
 class Handler():
     def __init__(self):
@@ -36,6 +37,19 @@ class Handler():
                     dist = math.sqrt((pos[0] - button1pos[0])**2 + (pos[1] - button1pos[1])**2)
                     if dist <= 15:
                         board.objects[self.selected].start_app()
+                elif issubclass(type(board.objects[self.selected]),Router_interface):
+                    selectedpos = board.objects[self.selected].rect.center
+                    pos = pygame.mouse.get_pos()
+                    button1pos = [selectedpos[0]+30, selectedpos[1] - 60]
+                    dist = math.sqrt((pos[0] - button1pos[0])**2 + (pos[1] - button1pos[1])**2)
+                    if dist <= 15:
+                        board.objects[self.selected].send_DHCP(board)
+                    selectedpos = board.objects[self.selected].rect.center
+                    pos = pygame.mouse.get_pos()
+                    button1pos = [selectedpos[0]-30, selectedpos[1] - 60]
+                    dist = math.sqrt((pos[0] - button1pos[0])**2 + (pos[1] - button1pos[1])**2)
+                    if dist <= 15:
+                        board.objects[self.selected].config()
                 elif issubclass(type(board.objects[self.selected]),Host) and board.objects[self.selected].DHCP_configured:
                     selectedpos = board.objects[self.selected].rect.center
                     pos = pygame.mouse.get_pos()

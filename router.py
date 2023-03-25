@@ -155,10 +155,11 @@ class Router(Host):
             return
         elif isinstance(packet, ARPrequest):
             self.ARP[packet.l3[0].str] = packet.l2[0]
-            if packet.l3 and self.IP and (packet.l3[1].str == self.IP.str):
-                for link in self.links:
+            inf = self.interfaces[interface]
+            if packet.l3 and inf.IP and (packet.l3[1].str == inf.IP.str):
+                for link in inf.links:
                     linked = board.objects[link]
-                    packet2 = ARPresponse(self.rect.center, linked, (self.mac, packet.l2[0]), (self.IP,packet.l3[0]))
+                    packet2 = ARPresponse(inf.rect.center, linked, (inf.mac, packet.l2[0]), (inf.IP,packet.l3[0]))
                     board.add_packet(packet2)
             return
         elif type(packet) == Packet:

@@ -16,7 +16,7 @@ class Host(Linkable):
         self.mac = mac
         self.IP = IP(())
         self.mask = None
-        self.gateway = None
+        self.gateway = IP(())
         self.new_packet_data = ('ffff', None)
         self.DHCP_configured = False
         self.target = ()
@@ -44,11 +44,10 @@ class Host(Linkable):
             self.ARP[packet.l3[0].str] = packet.l2[0]
             if packet.l2[1] == self.mac:
                 for p in self.waitingforARP:
-                    if p.str == packet.l3[0].str:
-                        for link in self.links:
-                            linked = board.objects[link]
-                            packet2 = Packet(self.rect.center, linked, (self.mac, self.ARP[p.str]), (self.IP, IP(p)))
-                            board.add_packet(packet2)
+                    if p[1].str == packet.l3[0].str:
+                        newpacket = p[0]
+                        newpacket.l2 = (newpacket.l2[0], packet.l2[0])
+                        board.add_packet(newpacket)
         elif isinstance(packet, ARPrequest):
             self.ARP[packet.l3[0].str] = packet.l2[0]
             if packet.l3 and self.IP and (packet.l3[1].str == self.IP.str):
@@ -80,14 +79,25 @@ class Host(Linkable):
     def send(self, board:Board):
         for link in self.links:
             linked = board.objects[link]
-            if self.target.str in self.ARP.keys():
-                packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target.str]), (self.IP, self.target))
-                board.add_packet(packet)
+            if self.IP.check(self.target, self.mask):
+                if self.target.str in self.ARP.keys():
+                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target.str]), (self.IP, self.target))
+                    board.add_packet(packet)
+                else:
+                    # Send ARP request
+                    packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.target)
+                    board.add_packet(packet)
+                    self.waitingforARP.append((Packet(self.rect.center, linked, (self.mac, '<MISSING>'), (self.IP, self.target)), self.target))
             else:
-                # Send ARP request
-                packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.target)
-                board.add_packet(packet)
-                self.waitingforARP.append(self.target)
+                #use default gateway
+                if self.gateway.str in self.ARP.keys():
+                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.gateway.str]), (self.IP, self.target))
+                    board.add_packet(packet)
+                else:
+                    # Send ARP request
+                    packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.gateway)
+                    board.add_packet(packet)
+                    self.waitingforARP.append((Packet(self.rect.center, linked, (self.mac, '<MISSING>'), (self.IP, self.target)), self.gateway))
     
     def drawOptions(self, screen):
         font = pygame.font.SysFont(None, 25, False)
@@ -99,6 +109,11 @@ class Host(Linkable):
         img = font.render(self.mac, True, (0,0,0), (255,255,255))
         rect = img.get_rect()
         rect.center = [self.rect.center[0], self.rect.center[1] + 70]
+        screen.blit(img, rect)
+        font = pygame.font.SysFont(None, 20, False)
+        img = font.render(self.gateway.str, True, (0,0,0), (255,255,255))
+        rect = img.get_rect()
+        rect.center = [self.rect.center[0], self.rect.center[1] + 90]
         screen.blit(img, rect)
         font = pygame.font.SysFont(None, 20, False)
         img = font.render(str(self.get_id()), True, (0,0,0), (255,255,255))
