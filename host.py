@@ -21,7 +21,10 @@ class Host(Linkable):
         self.DHCP_configured = False
         self.target = ()
         self.waitingforARP = []
-        self.receivedfrom = (IP(()), None)
+        self.resource = None
+        self.method = None
+        self.body = None
+        self.receivedfrom = (None, None)
         self.ARP = {} # nooo i don't want to do ARP cache
         self.sendimg = pygame.image.load('send.png')
         self.packetimg = pygame.image.load('packet.png')
@@ -59,23 +62,31 @@ class Host(Linkable):
                     board.add_packet(packet2)
         elif packet.l3 and self.IP and (packet.l3[1].str == self.IP.str):
             if 'server' in packet.payload.keys():
-                self.receivedfrom = (packet.l3[0],packet.payload['server'])
+                self.receivedfrom = (packet.l3[0].str + self.resource,packet.payload['server'])
 
     def press(self, button):
         if button == 'Cancel':
             self.app.stop()
             self.app = False
         else:
-            ip = self.app.getEntry("IP adress :")
-            self.target = IP(ip)
+            host = self.app.getEntry("URL adress :").split('/')
+            self.target = IP(host[0])
+            if len(host) >= 1:
+                self.resource = '/'+'/'.join(host[1:])
+            else:
+                self.resource = '/'
+            self.method = self.app.getEntry("Method :")
+            self.body = self.app.getEntry("Body :")
             self.app.stop()
             self.app = False
         
 
     def packet(self):
         self.app = appJar.gui()
-        self.app.addLabel("title", "Select packet destination")
-        self.app.addLabelEntry("IP adress :")
+        self.app.addLabel("title", "Request details")
+        self.app.addLabelEntry("URL adress :")
+        self.app.addLabelEntry("Method :")
+        self.app.addLabelEntry("Body :")
         self.app.addButtons(["Submit", "Cancel"], self.press)
         self.app.go()
 
@@ -84,27 +95,35 @@ class Host(Linkable):
             server = args[0]
         else:
             server = None
+        if self.resource:
+            resource = self.resource
+            method = self.method
+            body = self.body
+        else:
+            resource = '/'
+            method = 'GET'
+            body = ''
         for link in self.links:
             linked = board.objects[link]
             if self.IP.check(self.target, self.mask):
                 if self.target.str in self.ARP.keys():
-                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target.str]), (self.IP, self.target), server=server)
+                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.target.str]), (self.IP, self.target), server=server, resource=resource, method=method, body=body)
                     board.add_packet(packet)
                 else:
                     # Send ARP request
                     packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.target)
                     board.add_packet(packet)
-                    self.waitingforARP.append((Packet(self.rect.center, linked, (self.mac, '<MISSING>'), (self.IP, self.target), server=server), self.target))
+                    self.waitingforARP.append((Packet(self.rect.center, linked, (self.mac, '<MISSING>'), (self.IP, self.target), server=server, resource=resource, method=method, body=body), self.target))
             else:
                 #use default gateway
                 if self.gateway.str in self.ARP.keys():
-                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.gateway.str]), (self.IP, self.target), server=server)
+                    packet = Packet(self.rect.center, linked, (self.mac, self.ARP[self.gateway.str]), (self.IP, self.target), server=server, resource=resource, method=method, body=body)
                     board.add_packet(packet)
                 else:
                     # Send ARP request
                     packet = ARPrequest(self.rect.center, linked, self.mac, self.IP, self.gateway)
                     board.add_packet(packet)
-                    self.waitingforARP.append((Packet(self.rect.center, linked, (self.mac, '<MISSING>'), (self.IP, self.target), server=server), self.gateway))
+                    self.waitingforARP.append((Packet(self.rect.center, linked, (self.mac, '<MISSING>'), (self.IP, self.target), server=server, resource=resource, method=method, body=body), self.gateway))
     
     def drawOptions(self, screen):
         font = pygame.font.SysFont(None, 25, False)
@@ -128,21 +147,40 @@ class Host(Linkable):
         rect.center = [self.rect.center[0] + 35, self.rect.center[1] - 35]
         screen.blit(img, rect)
     def drawSelected(self, screen:pygame.surface.Surface):
-        if self.receivedfrom[0].str:
-            tablepos = (self.rect.center[0] - 110, self.rect.center[1] - 220)
-            pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 220, 140))
-            pygame.draw.rect(screen, (0,0,0),pygame.Rect(tablepos[0], tablepos[1], 220, 140), 2)
+        if self.receivedfrom[0]:
+            tablepos = (self.rect.center[0] - 150, self.rect.center[1] - 280)
+            pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 300, 200))
+            pygame.draw.rect(screen, (0,0,0),pygame.Rect(tablepos[0], tablepos[1], 300, 200), 2)
             font = pygame.font.SysFont(None, 20, False)
-            img = font.render(self.receivedfrom[0].str, True, (0,0,0))
+            img = font.render(self.receivedfrom[0], True, (0,0,0))
             rect = img.get_rect()
-            rect.center = (self.rect.centerx, self.rect.centery-240)
+            rect.center = (self.rect.centerx, self.rect.centery-300)
             screen.blit(img, rect)
             if self.receivedfrom[1]:
                 n = 0
                 for line in self.receivedfrom[1].split('\n'):
-                    img = font.render(str(line), True, (0,0,0))
-                    screen.blit(img, (tablepos[0] + 5, tablepos[1] + 5 + 15*n))
-                    n+=1
+                    indexofbracket = line.find('>')
+                    if indexofbracket > 0:
+                        markup = line[:indexofbracket-1].split('; ')
+                        data = {}
+                        keys = []
+                        for entry in markup:
+                            record = entry.split(':')
+                            data[record[0]] = record[1]
+                            keys.append(record[0])
+                        if 'font' in keys:
+                            fontsize = data['font']
+                        else:
+                            fontsize = 20
+                        font = pygame.font.SysFont(None, fontsize, False)
+                        img = font.render(str(line[indexofbracket+1:]), True, (0,0,0))
+                        screen.blit(img, (tablepos[0] + 5, tablepos[1] + 5 + 15*n))
+                        n+=1
+                    else:
+                        font = pygame.font.SysFont(None, 20, False)
+                        img = font.render(str(line), True, (0,0,0))
+                        screen.blit(img, (tablepos[0] + 5, tablepos[1] + 5 + 15*n))
+                        n+=1
             
         if self.DHCP_configured:
             button1pos = [self.rect.center[0] +40, self.rect.center[1] - 60]

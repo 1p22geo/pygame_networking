@@ -9,12 +9,36 @@ class Server(Host):
     def __init__(self, rect, mac):
         super().__init__(rect, mac)
         self.image = pygame.image.load('server.png')
-        self.content = ''
+        self.get = ''
+        self.code = ''
+        self.getcode = ''
+        self.database = []
 
     def receive(self, packet, board:Board):
         if type(packet) == Packet:
+            print('HTTP {0} {1}\n{2}'.format(packet.payload['method'], packet.payload['resource'], packet.payload['body']))
+            if packet.payload['method'] == 'POST':
+                db = self.database
+                host = packet.l3[0].str
+                try:
+                    exec(self.code)
+                    response = '200 OK'
+                except:
+                    response = '500 Server error'
+            elif packet.payload['method'] == 'GET':
+                db = self.database
+                host = packet.l3[0].str
+                try:
+                    exec(self.getcode)
+                    print('Code worked')
+                    response = eval(self.get)
+                    print('Expression worked')
+                except Exception as e:
+                    print(e)
+                    response = '500 Server error'
+                
             self.target = packet.l3[0]
-            super().send(board, self.content)
+            super().send(board, response)
         else:
             super().receive(packet, board)
     def press(self, button):
@@ -22,15 +46,56 @@ class Server(Host):
             self.app.stop()
             self.app = False
         else:
-            self.content = self.app.getTextArea("Response :")
+            self.code = self.app.getTextArea("Code to execute for POST requests: ")
+            self.getcode = self.app.getTextArea("Code to execute before GET requests: ")
+            self.get = self.app.getTextArea("Expression to evaluate for GET requests: ")
+            print(self.code, self.getcode, self.get, sep='\n\n\n')
             self.app.stop()
             self.app = False
         
 
     def config(self):
-        self.app = appJar.gui()
-        self.app.addLabel("title", "Input static response")
-        self.app.addTextArea("Response :")
+        self.app = appJar.gui('Server configuration', '720x800')
+        self.app.setStretch('column')
+        self.app.setSticky('nws')
+        self.app.addLabel("title", "Server configuration")
+        self.app.addHorizontalSeparator()
+        self.app.setStretch('both')
+        self.app.setSticky('news')
+        self.app.startTabbedFrame('Code')
+        with self.app.tab('Intro'):
+            self.app.addLabel("desc1", "The global variable 'db' is an array.")
+            self.app.addLabel("desc2", "Its state is retained between requests.")
+            self.app.addLabel("desc3", "Use it to store information between them.")
+            self.app.addLabel("desc5", "The global 'host' is the client's IP.")
+        with self.app.tab('POST'):
+            self.app.setStretch('column')
+            self.app.setSticky('nws')
+            self.app.addLabel("title1", "Code to execute for POST requests: ")
+            self.app.setStretch('both')
+            self.app.setSticky('news')
+            self.app.addTextArea("Code to execute for POST requests: ")
+        with self.app.tab('GET code'):
+            self.app.setStretch('column')
+            self.app.setSticky('nws')
+            self.app.addLabel("title2", "Code to execute before GET requests: ")
+            self.app.setStretch('both')
+            self.app.setSticky('news')
+            self.app.addTextArea("Code to execute before GET requests: ")
+        with self.app.tab('GET expression'):
+            self.app.setStretch('column')
+            self.app.setSticky('nws')
+            self.app.addLabel("title3", "Expression to evaluate for GET requests: ")
+            self.app.setStretch('both')
+            self.app.setSticky('news')
+            self.app.addTextArea("Expression to evaluate for GET requests: ")
+            self.app.setStretch('column')
+            self.app.setSticky('ews')
+            self.app.addLabel("desc4", "The expression must evaluate to a string.")
+        
+        self.app.stopTabbedFrame()
+        self.app.setStretch('column')
+        self.app.setSticky('ews')
         self.app.addButtons(["Submit", "Cancel"], self.press)
         self.app.go()
 
