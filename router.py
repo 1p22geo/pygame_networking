@@ -43,11 +43,11 @@ class Router(Host):
     
     def drag(self,widget):
         
-        print("Dragged from:", widget)
+        #print("Dragged from:", widget)
         self.draggedItem = widget
 
     def drop(self,widget):
-        print("Dropped on:", widget)
+        #print("Dropped on:", widget)
         if len(widget) == 2:
             self.routes.insert(int(widget[1]),self.routes.pop(int(self.draggedItem[1])))
         if widget == 'delete':
@@ -151,7 +151,7 @@ class Router(Host):
             self.ARP[packet.l3[0].str] = packet.l2[0]
             if packet.l2[1] == inf.mac:
                 for p in self.waitingforARP:
-                    print(p[1][1], packet.l3)
+                    #print(p[1][1], packet.l3)
                     if p[1][1].str == packet.l3[0].str:
                         p[0].l2 = (p[0].l2[0],packet.l2[0])
                         board.add_packet(p[0])
@@ -174,7 +174,7 @@ class Router(Host):
             else:
                 return
             route = self.routingtable[packet_route]
-            print("Interface {0} recieved a packet from {1}, forwarding to {2}".format(interface, packet.l3[0], route))
+            #print("Interface {0} recieved a packet from {1}, forwarding to {2}".format(interface, packet.l3[0], route))
             inf = self.interfaces[route[0]]
             for link in inf.links:
                 linked = board.objects[link]

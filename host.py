@@ -56,7 +56,7 @@ class Host(Linkable):
                     packet2 = ARPresponse(self.rect.center, linked, (self.mac, packet.l2[0]), (self.IP,packet.l3[0]))
                     board.add_packet(packet2)
         elif packet.l3 and self.IP and (packet.l3[1].str == self.IP.str):
-            print('received a packet at {}'.format(self.IP.str))
+            print('Received a packet at {}'.format(self.IP.str))
 
     def press(self, button):
         if button == 'Cancel':

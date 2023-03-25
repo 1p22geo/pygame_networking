@@ -1,4 +1,5 @@
 import pygame
+from pygame.locals import *
 from linkable import Linkable
 from board import Board
 from DHCP_discover import DHCP_discover
@@ -8,8 +9,7 @@ from ARPresponse import ARPresponse
 
 class Display():
     def __init__(self, size):
-        self.screen = pygame.display.set_mode(size)
-        self.screensize = size
+        self.screen = pygame.display.set_mode(size, RESIZABLE)
         self.sendimg = pygame.image.load('send.png')
         self.packetimg = pygame.image.load('packet.png')
     def draw(self, board:Board, selected):

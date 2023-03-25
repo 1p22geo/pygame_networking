@@ -2,12 +2,12 @@ from appJar import gui
 from IP import IP
 def drag(widget):
     global dragged
-    print("Dragged from:", widget)
+    #print("Dragged from:", widget)
     dragged = widget
 
 def drop(widget):
     global dragged
-    print("Dropped on:", widget)
+    #print("Dropped on:", widget)
     if len(widget) == 2:
         routes.insert(int(widget[1]),routes.pop(int(dragged[1])))
     if widget == 'delete':

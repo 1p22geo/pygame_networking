@@ -10,29 +10,29 @@ from eventhandler import Handler
 from addDHCP import AddDHCP
 pygame.init()
 
-size = width, height = 1280, 720
+size = width, height = 840, 520
 display = Display(size)
 board = Board()
 clock = pygame.time.Clock()
 handler = Handler()
 
 
-button = AddButton(pygame.Rect(25,130,50,50))
+button = AddButton(pygame.Rect(25,30,50,50))
 board.add_object(button)
 
-button = AddRepeater(pygame.Rect(20,200,60,60))
+button = AddRepeater(pygame.Rect(20,100,60,60))
 board.add_object(button)
 
-button = AddSwitch(pygame.Rect(20,270,60,60))
+button = AddSwitch(pygame.Rect(20,170,60,60))
 board.add_object(button)
 
-button = AddDHCP(pygame.Rect(10,340,80,80))
+button = AddDHCP(pygame.Rect(10,240,80,80))
 board.add_object(button)
 
-button = AddRouter(pygame.Rect(25,430,50,50))
+button = AddRouter(pygame.Rect(25,330,50,50))
 board.add_object(button)
 
-button = AddServer(pygame.Rect(20,500,60,80))
+button = AddServer(pygame.Rect(20,400,60,80))
 board.add_object(button)
 
 running = True

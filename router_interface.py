@@ -64,7 +64,7 @@ class Router_interface(Host):
         
 
     def config(self):
-        print("aa")
+        #print("aa")
         self.app = appJar.gui()
         self.app.addLabel("title", "Router interface configuration")
         self.app.addLabelEntry("IP adress :")
