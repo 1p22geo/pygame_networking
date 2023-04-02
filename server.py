@@ -8,7 +8,7 @@ import appJar
 class Server(Host):
     def __init__(self, rect, mac):
         super().__init__(rect, mac)
-        self.image = pygame.image.load('server.png')
+        self.image = 'server.png'
         self.get = ''
         self.code = ''
         self.getcode = ''
@@ -106,11 +106,11 @@ class Server(Host):
         button1pos = [self.rect.center[0] +20, self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.dhcpimg, rect)
+        screen.blit(pygame.image.load(self.dhcpimg), rect)
         button2pos = [self.rect.center[0] - 20, self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button2pos
-        screen.blit(self.packetimg, rect)
+        screen.blit(pygame.image.load(self.packetimg), rect)
         tablepos = [self.rect.centerx + 70, self.rect.centery - 50]
         if self.DHCP_configured:
             

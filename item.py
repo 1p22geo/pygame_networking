@@ -5,7 +5,7 @@ class Item():
         self.rect = rect
         self.__id = -1
         self.selectable = True
-        self.image = pygame.image.load('host.png')
+        self.image = 'host.png'
     
     def assign_id(self, newid):
         self.__id = newid

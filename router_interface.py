@@ -11,7 +11,7 @@ class Router_interface(Host):
         super().__init__(rect, mac)
         self.router = router
         self.id = if_id
-        self.image = pygame.image.load('interface.png')
+        self.image = 'routerIF.png'
     def dragged(self, pos, button):
         pass
     def receive(self, packet, board:Board):
@@ -24,6 +24,8 @@ class Router_interface(Host):
         else :
             board.objects[self.router].receive(packet,board, self.id)
     def drawOptions(self, screen):
+        pass
+    def drawSelected(self, screen):
         font = pygame.font.SysFont(None, 25, False)
         img = font.render(self.IP.str, True, (0,0,0), (255,255,255))
         rect = img.get_rect()
@@ -44,15 +46,14 @@ class Router_interface(Host):
         rect = img.get_rect()
         rect.center = [self.rect.center[0], self.rect.center[1] - 35]
         screen.blit(img, rect)
-    def drawSelected(self, screen):
         button1pos = [self.rect.center[0]+30, self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.dhcpimg, rect)
+        screen.blit(pygame.image.load(self.dhcpimg), rect)
         button1pos = [self.rect.center[0]-30, self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.packetimg, rect)
+        screen.blit(pygame.image.load(self.packetimg), rect)
     def press(self, button):
         if button == 'Cancel':
             self.app.stop()

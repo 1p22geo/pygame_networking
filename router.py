@@ -26,21 +26,21 @@ class Router(Host):
 
         
         self.ARP = {}
-        self.image = pygame.image.load('router.png')
-        self.ifimage = pygame.image.load('DHCP.png')
-        self.routeimg = pygame.image.load('route.png')
+        self.image = 'interface.png'
+        self.ifimage = 'DHCP.png'
+        self.routeimg = 'route.png'
         self.frame = 'Routes'
         
     def add_interface(self, board:Board):
         if len(self.interfaces) >= 4:
             return
         mac = generator.new_host()
-        interface = Router_interface(pygame.Rect(0,0,50,50), mac, self.get_id(), len(self.interfaces))
+        interface = Router_interface(pygame.Rect(0,0,20,20), mac, self.get_id(), len(self.interfaces))
         board.add_object(interface)
         self.interfaces.append(interface)
 
         self.update_interfaces()
-    
+
     def drag(self,widget):
         
         #print("Dragged from:", widget)
@@ -130,19 +130,19 @@ class Router(Host):
             case 0 :
                 pass
             case 1:
-                self.interfaces[0].rect.center = (self.rect.center[0], self.rect[1] - 50)
+                self.interfaces[0].rect.center = (self.rect.center[0], self.rect.center[1] - 0.7*50)
             case 2:
-                self.interfaces[0].rect.center = (self.rect.center[0] - 2*50, self.rect.center[1])
-                self.interfaces[1].rect.center = (self.rect.center[0] + 2*50, self.rect.center[1])
+                self.interfaces[0].rect.center = (self.rect.center[0] - 0.7*50, self.rect.center[1])
+                self.interfaces[1].rect.center = (self.rect.center[0] + 0.7*50, self.rect.center[1])
             case 3:
-                self.interfaces[0].rect.center = (self.rect.center[0] - 2*0.866*50, self.rect.center[1] + 2*25)
-                self.interfaces[1].rect.center = (self.rect.center[0] + 2*0.866*50, self.rect.center[1] + 2*25)
-                self.interfaces[2].rect.center = (self.rect.center[0], self.rect[1] - 50)
+                self.interfaces[0].rect.center = (self.rect.center[0] - 0.7*0.866*50, self.rect.center[1] + 0.7*25)
+                self.interfaces[1].rect.center = (self.rect.center[0] + 0.7*0.866*50, self.rect.center[1] + 0.7*25)
+                self.interfaces[2].rect.center = (self.rect.center[0], self.rect.center[1] - 0.7*50)
             case 4:
-                self.interfaces[0].rect.center = (self.rect.center[0] - 2*35, self.rect.center[1] - 2*35)
-                self.interfaces[1].rect.center = (self.rect.center[0] + 2*35, self.rect.center[1] - 2*35)
-                self.interfaces[2].rect.center = (self.rect.center[0] - 2*35, self.rect.center[1] + 2*35)
-                self.interfaces[3].rect.center = (self.rect.center[0] + 2*35, self.rect.center[1] + 2*35)
+                self.interfaces[0].rect.center = (self.rect.center[0] - 0.7*35, self.rect.center[1] - 0.7*35)
+                self.interfaces[1].rect.center = (self.rect.center[0] + 0.7*35, self.rect.center[1] - 0.7*35)
+                self.interfaces[2].rect.center = (self.rect.center[0] - 0.7*35, self.rect.center[1] + 0.7*35)
+                self.interfaces[3].rect.center = (self.rect.center[0] + 0.7*35, self.rect.center[1] + 0.7*35)
             case _:
                 raise Exception('Too much interfaces')
     def receive(self, packet, board: Board, interface):
@@ -195,11 +195,11 @@ class Router(Host):
         button1pos = [self.rect.center[0] + 30, self.rect.center[1] - 100]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.ifimage, rect)
+        screen.blit(pygame.image.load(self.ifimage), rect)
         button1pos = [self.rect.center[0] - 30, self.rect.center[1] - 100]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.routeimg, rect)
+        screen.blit(pygame.image.load(self.routeimg), rect)
         tablepos = [self.rect.centerx + 70, self.rect.centery - 50]
         height = 300
         pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 150, height))

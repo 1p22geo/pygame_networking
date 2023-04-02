@@ -8,6 +8,8 @@ from addRepeater import AddRepeater
 from addSwitch import AddSwitch
 from eventhandler import Handler
 from addDHCP import AddDHCP
+from dhcp import generator
+import dill
 pygame.init()
 
 size = width, height = 840, 520
@@ -41,8 +43,15 @@ while running:
         if event.type == pygame.QUIT:
             pygame.quit()
             running = False
+            exit(0)
         else:
             handler.handle_event(event, board)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
+            file = open('saves/gamesave.sav', 'wb')
+            dill.dump((board, generator), file)
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_o:
+            file = open('saves/gamesave.sav', 'rb')
+            board, generator = dill.load(file)
     if not running:
         break
     

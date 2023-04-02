@@ -8,7 +8,7 @@ class AddServer(Item):
     def __init__(self, rect):
         super().__init__(rect)
         self.selectable = False
-        self.image = pygame.image.load('server.png')
+        self.image = 'server.png'
         
 
     def dragto(self, pos, button, board:Board):

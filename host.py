@@ -26,10 +26,10 @@ class Host(Linkable):
         self.body = None
         self.receivedfrom = (None, None)
         self.ARP = {} # nooo i don't want to do ARP cache
-        self.sendimg = pygame.image.load('send.png')
-        self.packetimg = pygame.image.load('packet.png')
-        self.dhcpimg = pygame.image.load('DHCP.png')
-        self.closeimg = pygame.image.load('close.png')
+        self.sendimg = 'send.png'
+        self.packetimg = 'packet.png'
+        self.dhcpimg = 'DHCP.png'
+        self.closeimg = 'close.png'
     
     def send_DHCP(self, board:Board):
         for link in self.links:
@@ -214,15 +214,15 @@ class Host(Linkable):
             button1pos = [self.rect.center[0] +40, self.rect.center[1] - 60]
             rect = pygame.Rect(0,0,30,30)
             rect.center = button1pos
-            screen.blit(self.sendimg, rect)
+            screen.blit(pygame.image.load(self.sendimg), rect)
             button1pos = [self.rect.center[0], self.rect.center[1] - 60]
             rect = pygame.Rect(0,0,30,30)
             rect.center = button1pos
-            screen.blit(self.dhcpimg, rect)
+            screen.blit(pygame.image.load(self.dhcpimg), rect)
             button2pos = [self.rect.center[0] - 40, self.rect.center[1] - 60]
             rect = pygame.Rect(0,0,30,30)
             rect.center = button2pos
-            screen.blit(self.packetimg, rect)
+            screen.blit(pygame.image.load(self.packetimg), rect)
             tablepos = [self.rect.centerx + 70, self.rect.centery - 50]
             height = 300
             pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 150, height))
@@ -248,4 +248,4 @@ class Host(Linkable):
             button1pos = [self.rect.center[0], self.rect.center[1] - 60]
             rect = pygame.Rect(0,0,30,30)
             rect.center = button1pos
-            screen.blit(self.dhcpimg, rect)
+            screen.blit(pygame.image.load(self.dhcpimg), rect)

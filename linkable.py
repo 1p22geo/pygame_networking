@@ -7,7 +7,7 @@ class Linkable(item.Item):
         super().__init__(rect)
         self.links = []
 
-    
+
     def dragto(self, pos, button, board):
         if button == 3:
             for o in board.objects:

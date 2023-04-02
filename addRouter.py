@@ -8,7 +8,7 @@ class AddRouter(Item):
     def __init__(self, rect):
         super().__init__(rect)
         self.selectable = False
-        self.image = pygame.image.load('interface.png')
+        self.image = 'interface.png'
 
     def dragto(self, pos, button, board:Board):
         newrect = pygame.Rect(0,0, 50, 50)

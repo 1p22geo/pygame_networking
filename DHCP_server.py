@@ -10,7 +10,7 @@ import appJar
 class DHCP_server(Host):
     def __init__(self, rect:pygame.Rect, mac:str):
         super().__init__(rect, mac)
-        self.image = pygame.image.load('DHCPserver.png')
+        self.image = 'DHCPserver.png'
         self.mac = mac
         self.IP = IP('22.33.44.5')
         self.mask = '/24' # will be something like /24 or /16
@@ -64,7 +64,7 @@ class DHCP_server(Host):
         button1pos = [self.rect.center[0], self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.dhcpimg, rect)
+        screen.blit(pygame.image.load(self.dhcpimg), rect)
     def drawOptions(self, screen):
         font = pygame.font.SysFont(None, 25, False)
         img = font.render(self.IP.str, True, (0,0,0), (255,255,255))

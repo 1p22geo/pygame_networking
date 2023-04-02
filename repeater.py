@@ -10,7 +10,7 @@ from ARPresponse import ARPresponse
 class Repeater(Host):
     def __init__(self, rect, mac):
         super().__init__(rect, None)
-        self.image = pygame.image.load('repeater.png')
+        self.image = 'repeater.png'
         self.selectable = False
     def forward_packet(self, packet, link, board:Board):
         if isinstance(packet, DHCP_discover):

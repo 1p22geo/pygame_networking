@@ -12,17 +12,8 @@ class Switch(Host):
     def __init__(self, rect, mac):
         super().__init__(rect, mac)
         self.table = {}
-        '''
-        The routing table of the switch
-        ...or sth like that
-        Assigns link numbers to MAC adresses
-        ARP cache - not today!
-        '''
-        '''
-        ACHUALLY yesterday.
-        '''
-    
-        self.image = pygame.image.load('switch.png')
+        self.image = 'switch.png'
+
     def send():
         pass
     def packet():
@@ -44,8 +35,8 @@ class Switch(Host):
             packet2 = Packet(self.rect.center, board.objects[link], packet.l2, packet.l3)
             packet2.payload = packet.payload
             board.add_packet(packet2)
-        
-    
+
+
     def receive(self, packet:Packet, board:Board):
         if not (packet.l2[0] in self.table.keys()):
             for link in self.links:
@@ -67,12 +58,12 @@ class Switch(Host):
             for link in self.links:
                 if board.objects[link].rect.center != packet.startpos:
                     self.forward_packet(packet, link, board)
-    
+
     def drawSelected(self, screen):
         button1pos = [self.rect.center[0], self.rect.center[1] - 60]
         rect = pygame.Rect(0,0,30,30)
         rect.center = button1pos
-        screen.blit(self.dhcpimg, rect)
+        screen.blit(pygame.image.load(self.dhcpimg), rect)
         tablepos = [self.rect.centerx + 70, self.rect.centery - 50]
         height = 300
         pygame.draw.rect(screen, (255,255,255),pygame.Rect(tablepos[0], tablepos[1], 150, height))
@@ -90,7 +81,7 @@ class Switch(Host):
             font = pygame.font.SysFont(None, 20, False)
             img = font.render(str(mac), True, (0,0,0))
             screen.blit(img, (tablepos[0] + 10, tablepos[1] + ypos))
-            img = font.render('host '+str(link), True, (0,0,0))
+            img = font.render('Port '+str(self.links.index(link)), True, (0,0,0))
             rect = img.get_rect()
             rect.topright = [tablepos[0] + 140, tablepos[1] + ypos]
             screen.blit(img, rect)
