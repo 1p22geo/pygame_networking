@@ -47,11 +47,45 @@ while running:
         else:
             handler.handle_event(event, board)
         if event.type == pygame.KEYDOWN and event.key == pygame.K_p:
-            file = open('saves/gamesave.sav', 'wb')
-            dill.dump((board, generator), file)
+            try:
+                filename = input("Name of file: ")
+                file = open('saves/{0}'.format(filename), 'wb')
+                dill.dump((board, generator), file)
+                print("Game saved")
+            except:
+                print("Saving went wrong")
+            finally:
+                file.close()
         if event.type == pygame.KEYDOWN and event.key == pygame.K_o:
-            file = open('saves/gamesave.sav', 'rb')
-            board, generator = dill.load(file)
+            try:
+                filename = input("Name of file: ")
+                file = open('saves/{0}'.format(filename), 'rb')
+                board, generator = dill.load(file)
+                print("Save restored")
+            except:
+                print("Restoring save went wrong")
+            finally:
+                file.close()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_l:
+            try:
+                filename = "quick.sav"
+                file = open('saves/{0}'.format(filename), 'wb')
+                dill.dump((board, generator), file)
+                print("Game saved")
+            except:
+                print("Saving went wrong")
+            finally:
+                file.close()
+        if event.type == pygame.KEYDOWN and event.key == pygame.K_k:
+            try:
+                filename = "quick.sav"
+                file = open('saves/{0}'.format(filename), 'rb')
+                board, generator = dill.load(file)
+                print("Save restored")
+            except:
+                print("Restoring save went wrong")
+            finally:
+                file.close()
     if not running:
         break
     

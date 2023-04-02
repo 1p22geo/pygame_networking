@@ -167,14 +167,29 @@ class Router(Host):
                     board.add_packet(packet2)
             return
         elif type(packet) == Packet:
-            
+            print('==============================')
+            print("Recieved packet:\nL3:")
+            print(packet.l3)
+            print("L2:")
+            print(packet.l2)
+            print('==============================')
+            print("Checking routes for ", packet.l3[1].str)
+            print('==============================')
             for route in self.routes:
+                print(route[0],route[1])
                 if packet.l3[1].check(route[0], route[1]):
+                    print("Route matched, redirecting by ", route)
                     packet_route = route
                     break
             else:
                 return
+            print('==============================')
+            print("Route checking finished. Redirecting to:")
             route = self.routingtable[packet_route]
+            print(route[1], "IF"+str(route[0]))
+            print('==============================')
+
+
             #print("Interface {0} recieved a packet from {1}, forwarding to {2}".format(interface, packet.l3[0], route))
             inf = self.interfaces[route[0]]
             for link in inf.links:
